@@ -1,84 +1,3 @@
-// backend/server.js
-// require('dotenv').config();
-// const express = require('express');
-// const mongoose = require('mongoose');
-// const bodyParser = require('body-parser');
-// const cors = require('cors');
-
-// const app = express();
-// const port = 3000;
-
-// // Enable CORS for the Angular app
-// app.use(cors({
-//     origin: 'http://localhost:4200'  // Adjust according to your Angular app's address
-// }));
-
-// app.use(bodyParser.json());
-
-// // Use environment variables for MongoDB URI
-// const mongoURI = process.env.MONGODB_URI || 'mongodb+srv://king2000:lamp100@cluster0.fzl4pqy.mongodb.net/tradingjournal?retryWrites=true&w=majority&appName=Cluster0';
-
-// // Connect to MongoDB using Mongoose
-// mongoose.connect(mongoURI, {
-//   useNewUrlParser: true,
-//   useUnifiedTopology: true,
-//   tls: true,
-//   tlsInsecure: true // Ignore SSL issues temporarily; not recommended for production
-// })
-// .then(() => {
-//   console.log('MongoDB connected');
-// })
-// .catch(err => {
-//   console.error('MongoDB connection error:', err);
-//   process.exit(1); // Exit if unable to connect to MongoDB
-// });
-
-// // Trading Schema
-// const tradeSchema = new mongoose.Schema({
-//   date: { type: Date, required: true },
-//   symbol: { type: String, required: true },
-//   entryPrice: { type: Number, required: true },
-//   currentPrice: { type: Number, required: true },
-//   roi: { type: Number, required: true },
-// });
-
-// const Trade = mongoose.model('Trade', tradeSchema);
-
-// // Routes
-// app.get('/api/trades', async (req, res) => {
-//   try {
-//     const trades = await Trade.find();
-//     res.json(trades);
-//   } catch (err) {
-//     res.status(500).send(err);
-//   }
-// });
-
-// app.post('/api/trades', async (req, res) => {
-//   try {
-//     const newTrade = new Trade(req.body);
-//     await newTrade.save();
-//     res.json(newTrade);
-//   } catch (err) {
-//     res.status(500).send(err);
-//   }
-// });
-
-// // Add update route
-// app.put('/api/trades/:id', async (req, res) => {
-//   try {
-//     const updatedTrade = await Trade.findByIdAndUpdate(req.params.id, req.body, { new: true });
-//     res.json(updatedTrade);
-//   } catch (err) {
-//     res.status(500).send(err);
-//   }
-// });
-
-
-// app.listen(port, () => {
-//   console.log(`Server running on http://localhost:${port}`);
-// });
-
 
 require('dotenv').config();
 const express = require('express');
@@ -91,9 +10,25 @@ const jwt = require('jsonwebtoken');
 const app = express();
 const port = 3000;
 
+// app.use(cors({
+//     origin: ['https://romadona10.github.io', 'http://localhost:4200'],  // Adjust according to your Angular app's address
+    
+// }));
+
+const allowedOrigins = ['https://romadona10.github.io', 'http://localhost:4200'];
+
 app.use(cors({
-    origin: 'http://localhost:4200'  // Adjust according to your Angular app's address
+    origin: (origin, callback) => {
+        if (allowedOrigins.includes(origin) || !origin) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true,
 }));
+
 
 app.use(bodyParser.json());
 
